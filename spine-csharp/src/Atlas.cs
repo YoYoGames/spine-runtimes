@@ -44,7 +44,7 @@ using Windows.Storage;
 
 namespace Spine {
 	public class Atlas : IEnumerable<AtlasRegion> {
-		readonly List<AtlasPage> pages = new List<AtlasPage>();
+		public readonly List<AtlasPage> pages = new List<AtlasPage>();
 		List<AtlasRegion> regions = new List<AtlasRegion>();
 		TextureLoader textureLoader;
 

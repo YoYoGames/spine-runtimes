@@ -2133,7 +2133,8 @@ var spine;
 			path = this.pathPrefix + path;
 			this.toLoad++;
 			var img = new Image();
-			img.crossOrigin = "anonymous";
+			//img.crossOrigin = "anonymous";
+			img.crossOrigin = g_HttpRequestCrossOriginType;	// support for configurable crossOrigin setting
 			img.onload = function (ev) {
 				var texture = _this.textureLoader(img);
 				_this.assets[path] = texture;
@@ -2149,7 +2150,8 @@ var spine;
 				if (error)
 					error(path, "Couldn't load image " + path);
 			};
-			img.src = path;
+			//img.src = path;
+			img.src = set_load_location(null, null, path);
 		};
 		AssetManager.prototype.loadTextureData = function (path, data, success, error) {
 			var _this = this;
@@ -3382,8 +3384,11 @@ var spine;
 			if (!this.queueAsset(clientId, textureLoader, path))
 				return;
 			var img = new Image();
-			img.src = path;
-			img.crossOrigin = "anonymous";
+			//img.src = path;
+			//img.crossOrigin = "anonymous";
+			// support for configurable crossOrigin setting
+			img.crossOrigin = g_HttpRequestCrossOriginType;
+			img.src = set_load_location(null, null, path);
 			img.onload = function (ev) {
 				_this.rawAssets[path] = img;
 			};
@@ -5373,9 +5378,15 @@ var spine;
 			this.regions = new Array();
 			this.load(atlasText, textureLoader);
 		}
-		TextureAtlas.prototype.load = function (atlasText, textureLoader) {
-			if (textureLoader == null)
-				throw new Error("textureLoader cannot be null.");
+		TextureAtlas.prototype.load = function (atlasText, textureLoader)
+		{
+			// Fix for custom attachments not working
+			if (atlasText === null || atlasText === undefined)
+		        return;
+		    if (textureLoader === null || textureLoader === undefined)
+		        return;
+			//if (textureLoader == null)
+			//	throw new Error("textureLoader cannot be null.");
 			var reader = new TextureAtlasReader(atlasText);
 			var tuple = new Array(4);
 			var page = null;
@@ -5473,7 +5484,11 @@ var spine;
 	var TextureAtlasReader = (function () {
 		function TextureAtlasReader(text) {
 			this.index = 0;
-			this.lines = text.split(/\r\n|\r|\n/);
+			//this.lines = text.split(/\r\n|\r|\n/);
+			// Fix for obfuscation
+			var txt = text.replace("\r\n", "\n");
+			txt = txt.replace("\r", "\n");
+			this.lines = text.split("\n");
 		}
 		TextureAtlasReader.prototype.readLine = function () {
 			if (this.index >= this.lines.length)
